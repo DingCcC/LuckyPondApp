@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lucky Pond Support</title>
+  <style>
+    :root {
+      --pond: #123B25;
+      --pond-deep: #071A16;
+      --reed: #2E6B3D;
+      --wood: #6B3416;
+      --wood-dark: #3C1B0C;
+      --gold: #D8A94A;
+      --lotus: #D97986;
+      --aqua: #49C5BD;
+      --paper: #F4D89C;
+      --ink: #281508;
+      --cream: #FFF3D5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 78% 12%, rgba(216, 169, 74, 0.34), transparent 22rem),
+        radial-gradient(circle at 18% 18%, rgba(73, 197, 189, 0.2), transparent 18rem),
+        linear-gradient(160deg, #1C572F 0%, var(--pond-deep) 58%, #030A08 100%);
+      line-height: 1.62;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at center, black, transparent 72%);
+    }
+    .wrap {
+      width: min(980px, calc(100% - 34px));
+      margin: 0 auto;
+      padding: 44px 0 32px;
+    }
+    .mast {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 28px;
+      align-items: stretch;
+    }
+    .title-board {
+      min-height: 310px;
+      padding: clamp(28px, 5vw, 52px);
+      border: 2px solid rgba(216, 169, 74, 0.72);
+      border-radius: 20px;
+      background:
+        linear-gradient(135deg, rgba(107, 52, 22, 0.96), rgba(60, 27, 12, 0.94)),
+        repeating-linear-gradient(0deg, transparent 0 18px, rgba(255,255,255,0.04) 19px 20px);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.36), inset 0 1px rgba(255,255,255,0.25);
+    }
+    .eyebrow {
+      color: var(--gold);
+      font: 800 0.78rem ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 12px 0 18px;
+      max-width: 680px;
+      font-size: clamp(2.7rem, 8vw, 5.8rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+    .lead {
+      margin: 0;
+      max-width: 54ch;
+      color: #F7E5B9;
+      font-size: clamp(1.05rem, 2vw, 1.28rem);
+    }
+    .seal {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      min-height: 310px;
+      padding: 28px;
+      border: 2px solid rgba(216, 169, 74, 0.62);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 52% 36%, rgba(73, 197, 189, 0.38), transparent 8rem),
+        linear-gradient(180deg, rgba(18, 59, 37, 0.92), rgba(7, 26, 22, 0.96));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08), 0 24px 56px rgba(0,0,0,0.32);
+      text-align: center;
+    }
+    .crest {
+      width: 132px;
+      height: 132px;
+      border: 8px solid var(--gold);
+      border-radius: 38% 62% 48% 52%;
+      display: grid;
+      place-items: center;
+      color: var(--aqua);
+      font: 900 2.4rem ui-sans-serif, system-ui, sans-serif;
+      background: rgba(4, 28, 24, 0.88);
+      box-shadow: 0 0 0 8px rgba(216, 169, 74, 0.18), inset 0 0 36px rgba(73, 197, 189, 0.22);
+    }
+    .seal p {
+      margin: 18px 0 0;
+      color: #F0D899;
+      font-weight: 700;
+    }
+    .contact-strip {
+      margin: 28px 0;
+      padding: 20px;
+      border-radius: 16px;
+      background: linear-gradient(90deg, rgba(216, 169, 74, 0.94), rgba(217, 121, 134, 0.86));
+      color: var(--ink);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.28);
+    }
+    .contact-strip a {
+      color: var(--ink);
+      font: 900 clamp(1.1rem, 2.5vw, 1.7rem) ui-sans-serif, system-ui, sans-serif;
+      overflow-wrap: anywhere;
+      text-decoration: none;
+    }
+    .support-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+    .paper {
+      padding: 24px;
+      border: 1px solid rgba(216, 169, 74, 0.58);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(244, 216, 156, 0.98), rgba(255, 243, 213, 0.94));
+      color: var(--ink);
+      box-shadow: 0 18px 42px rgba(0,0,0,0.22);
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.5rem, 3vw, 2.15rem);
+      line-height: 1.08;
+    }
+    p { margin: 0 0 12px; }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li { margin: 8px 0; }
+    .muted { color: rgba(40, 21, 8, 0.72); }
+    footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(216, 169, 74, 0.32);
+      color: rgba(255, 243, 213, 0.72);
+      font: 700 0.95rem ui-sans-serif, system-ui, sans-serif;
+    }
+    @media (max-width: 780px) {
+      .wrap { width: min(100% - 24px, 980px); padding-top: 24px; }
+      .mast, .support-grid { grid-template-columns: 1fr; }
+      .title-board, .seal { min-height: auto; }
+      .seal { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="mast">
+      <div class="title-board">
+        <div class="eyebrow">Player Support</div>
+        <h1>Lucky Pond Help</h1>
+        <p class="lead">For gameplay questions, feedback, or issue reports, contact the Lucky Pond support mailbox below.</p>
+      </div>
+      <aside class="seal" aria-label="Lucky Pond emblem">
+        <div class="crest">LP</div>
+        <p>Fishing rewards, pond progress, and gameplay support.</p>
+      </aside>
+    </section>
+
+    <section class="contact-strip" aria-label="Support email">
+      <div class="eyebrow">Email</div>
+      <a href="mailto:phamkhanhquy015@gmail.com">phamkhanhquy015@gmail.com</a>
+    </section>
+
+    <section class="support-grid">
+      <article class="paper">
+        <h2>What to include</h2>
+        <ul>
+          <li>Your device model and iOS version.</li>
+          <li>The Lucky Pond app version.</li>
+          <li>A short description of what happened and what you expected.</li>
+          <li>Optional screenshots if they help explain the issue.</li>
+        </ul>
+      </article>
+      <article class="paper">
+        <h2>Quick checks</h2>
+        <p>Restart the app, confirm device storage is available, and install the latest App Store version when available.</p>
+        <p class="muted">Lucky Pond keeps game progress on your device.</p>
+      </article>
+    </section>
+  </main>
+
+  <footer class="wrap">© Lucky Pond</footer>
+</body>
+</html>

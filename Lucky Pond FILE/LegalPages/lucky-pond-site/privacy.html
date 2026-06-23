@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lucky Pond Privacy Policy</title>
+  <style>
+    :root {
+      --pond: #123B25;
+      --pond-deep: #061612;
+      --leaf: #2F6E3C;
+      --wood: #6B3416;
+      --gold: #D8A94A;
+      --lotus: #D97986;
+      --aqua: #49C5BD;
+      --paper: #F5D99A;
+      --ink: #241306;
+      --cream: #FFF3D5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--cream);
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      line-height: 1.64;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(217, 121, 134, 0.18), transparent 19rem),
+        radial-gradient(circle at 84% 10%, rgba(216, 169, 74, 0.34), transparent 20rem),
+        linear-gradient(180deg, #1B5730 0%, var(--pond) 38%, var(--pond-deep) 100%);
+    }
+    .page {
+      width: min(1040px, calc(100% - 34px));
+      margin: 0 auto;
+      padding: 42px 0 34px;
+    }
+    .header {
+      position: relative;
+      padding: clamp(28px, 5vw, 48px);
+      border: 2px solid rgba(216, 169, 74, 0.68);
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(61, 27, 11, 0.9), rgba(107, 52, 22, 0.84)),
+        radial-gradient(circle at 82% 18%, rgba(73, 197, 189, 0.24), transparent 16rem);
+      box-shadow: 0 26px 70px rgba(0,0,0,0.34), inset 0 1px rgba(255,255,255,0.18);
+      overflow: hidden;
+    }
+    .header::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      bottom: -66px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(217, 121, 134, 0.55), rgba(216, 169, 74, 0.16) 46%, transparent 68%);
+    }
+    .eyebrow {
+      color: var(--gold);
+      font: 900 0.78rem ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      position: relative;
+      margin: 12px 0 16px;
+      max-width: 800px;
+      font-size: clamp(2.6rem, 7vw, 5.4rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+      z-index: 1;
+    }
+    .lead {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 66ch;
+      color: #F9E4AE;
+      font-size: clamp(1.02rem, 2vw, 1.24rem);
+    }
+    .policy-stack {
+      display: grid;
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      padding: 22px;
+      border: 1px solid rgba(216, 169, 74, 0.5);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(245, 217, 154, 0.98), rgba(255, 243, 213, 0.94));
+      color: var(--ink);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.22);
+    }
+    .mark {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, var(--wood), #3B190B);
+      color: var(--gold);
+      font: 900 1.4rem ui-sans-serif, system-ui, sans-serif;
+      box-shadow: inset 0 0 0 2px rgba(216,169,74,0.35);
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.35rem, 2.5vw, 2rem);
+      line-height: 1.12;
+    }
+    p { margin: 0 0 10px; }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li { margin: 7px 0; }
+    a {
+      color: #1B5C55;
+      font-weight: 900;
+      overflow-wrap: anywhere;
+      text-decoration: none;
+    }
+    .contact {
+      margin-top: 24px;
+      padding: 20px 22px;
+      border-radius: 18px;
+      background: linear-gradient(90deg, rgba(73, 197, 189, 0.96), rgba(216, 169, 74, 0.92));
+      color: var(--ink);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.26);
+    }
+    footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(216, 169, 74, 0.32);
+      color: rgba(255, 243, 213, 0.72);
+      font: 700 0.95rem ui-sans-serif, system-ui, sans-serif;
+    }
+    @media (max-width: 700px) {
+      .page { width: min(100% - 24px, 1040px); padding-top: 24px; }
+      .row { grid-template-columns: 1fr; }
+      .mark { width: 62px; height: 62px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="header">
+      <div class="eyebrow">Effective date: 2026-06-22</div>
+      <h1>Lucky Pond Privacy Policy</h1>
+      <p class="lead">This policy explains how Lucky Pond handles information for the iOS game experience.</p>
+    </section>
+
+    <section class="policy-stack" aria-label="Privacy sections">
+      <article class="row">
+        <div class="mark">01</div>
+        <div>
+          <h2>Information stored by the game</h2>
+          <p>Lucky Pond stores gameplay progress, settings, resources, fish records, gear, pond decor, event progress, and achievements on your device.</p>
+          <p>The app does not require an account and does not collect personal information directly through gameplay.</p>
+        </div>
+      </article>
+
+      <article class="row">
+        <div class="mark">02</div>
+        <div>
+          <h2>Support email</h2>
+          <p>If you contact support, we receive the email address and information you choose to include in your message. This information is used only to respond to your request.</p>
+          <p><a href="mailto:phamkhanhquy015@gmail.com">phamkhanhquy015@gmail.com</a></p>
+        </div>
+      </article>
+
+      <article class="row">
+        <div class="mark">03</div>
+        <div>
+          <h2>Permissions and platform services</h2>
+          <p>Device permission choices are managed by iOS, including the App Tracking Transparency system prompt when requested. Lucky Pond does not specify advertising, analytics, account, purchase, or location service providers in this policy.</p>
+          <ul>
+            <li>Apple platform services may be used for app distribution and permission management.</li>
+            <li>You can manage app permissions in device settings.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="row">
+        <div class="mark">04</div>
+        <div>
+          <h2>Retention and choices</h2>
+          <p>Support messages are kept only as long as reasonably necessary to respond, resolve issues, and meet applicable obligations.</p>
+          <p>You may request access, correction, or deletion of information associated with your support message by emailing us.</p>
+        </div>
+      </article>
+
+      <article class="row">
+        <div class="mark">05</div>
+        <div>
+          <h2>Children and updates</h2>
+          <p>Lucky Pond is not directed to children under 13, and we do not knowingly collect personal information from children.</p>
+          <p>This policy may be updated from time to time. Updates will be posted on this page with a revised effective date.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="contact" aria-label="Privacy contact">
+      <strong>Privacy contact:</strong>
+      <a href="mailto:phamkhanhquy015@gmail.com">phamkhanhquy015@gmail.com</a>
+    </section>
+  </main>
+
+  <footer class="page">© Lucky Pond</footer>
+</body>
+</html>

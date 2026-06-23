@@ -1,0 +1,23 @@
+{
+  "images": [
+    {
+      "filename": "lp_hud_coins.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "lp_hud_coins@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "lp_hud_coins@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

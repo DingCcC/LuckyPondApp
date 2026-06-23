@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "fish_frogfish.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "fish_frogfish@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "fish_frogfish@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

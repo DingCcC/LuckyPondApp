@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "decor_lotus_cluster.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "decor_lotus_cluster@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "decor_lotus_cluster@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

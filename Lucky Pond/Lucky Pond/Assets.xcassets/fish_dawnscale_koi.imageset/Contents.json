@@ -1,0 +1,8 @@
+{
+  "images" : [
+    { "filename" : "fish_dawnscale_koi.png", "idiom" : "universal", "scale" : "1x" },
+    { "filename" : "fish_dawnscale_koi@2x.png", "idiom" : "universal", "scale" : "2x" },
+    { "filename" : "fish_dawnscale_koi@3x.png", "idiom" : "universal", "scale" : "3x" }
+  ],
+  "info" : { "author" : "xcode", "version" : 1 }
+}

@@ -1,0 +1,23 @@
+{
+  "images": [
+    {
+      "filename": "fish_tidehook_carp.png",
+      "idiom": "universal",
+      "scale": "1x"
+    },
+    {
+      "filename": "fish_tidehook_carp@2x.png",
+      "idiom": "universal",
+      "scale": "2x"
+    },
+    {
+      "filename": "fish_tidehook_carp@3x.png",
+      "idiom": "universal",
+      "scale": "3x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

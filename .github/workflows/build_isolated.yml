@@ -1,0 +1,144 @@
+name: Isolated iOS Build & Upload
+
+# 触发条件：允许我们在 GitHub 网页端手动点击运行
+on:
+  workflow_dispatch:
+
+jobs:
+  build_with_signing:
+    # 召唤一台极其干净的最新版 macOS 虚拟机
+    runs-on: macos-latest
+
+    steps:
+      # 1. 检出你的项目代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+# 🚨 新增步骤：强制指定使用最新的 Xcode (解决 SDK 版本过低报错)
+      - name: Select latest Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest'
+          
+      # 2. 核心隔离操作：证书注入与真名(Name)提取
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERT_BASE64 }}
+          P12_PASSWORD: ${{ secrets.BUILD_CERT_PWD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROV_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PWD }}
+        run: |
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # 1. 还原证书与描述文件 (过滤 Windows CRLF 换行)
+          echo "$BUILD_CERTIFICATE_BASE64" | tr -d '\n\r ' | base64 --decode -o $CERTIFICATE_PATH
+          echo "$BUILD_PROVISION_PROFILE_BASE64" | tr -d '\n\r ' | base64 --decode -o $PP_PATH
+
+          # 2. 剥壳二进制文件并提取 UUID 和 Name
+          security cms -D -i $PP_PATH -o profile.plist
+          UUID=$(/usr/libexec/PlistBuddy -c "Print UUID" profile.plist)
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print Name" profile.plist)
+          
+          if [ -z "$UUID" ] || [ -z "$PROFILE_NAME" ]; then
+            echo "❌ 提取 UUID 或 Name 失败！"
+            exit 1
+          fi
+          echo "✅ 成功提取真实 UUID: $UUID"
+          echo "✅ 成功提取真实 Name: $PROFILE_NAME"
+
+          # 3. 放入系统目录，强制使用 UUID 作为文件名
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$UUID.mobileprovision
+
+          # 4. 创建并配置临时钥匙串
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychains -d user -s $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+
+          # 5. 补充苹果官方中间证书
+          curl -sL -o wwdr_g3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
+          security import wwdr_g3.cer -k $KEYCHAIN_PATH -A
+          curl -sL -o wwdr_g6.cer https://www.apple.com/certificateauthority/AppleWWDRCAG6.cer
+          security import wwdr_g6.cer -k $KEYCHAIN_PATH -A
+
+          # 6. 安全导入私有证书并赋权
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # 7. 🚨【绝对终结】放弃不可靠的文本替换，使用 Ruby 脚本精准执行外科手术！
+          echo "⏳ 正在安装 Xcodeproj 工具..."
+          sudo gem install xcodeproj -N
+          
+          # 从描述文件中精准提取出 Team ID
+          TEAM_ID=$(/usr/libexec/PlistBuddy -c "Print TeamIdentifier:0" profile.plist)
+          echo "✅ 成功提取 Team ID: $TEAM_ID"
+          
+          echo "⏳ 正在直接向工程底层数据结构强行注入签名配置..."
+          ruby -e "
+          require 'xcodeproj'
+          project_path = 'Lucky Pond/Lucky Pond.xcodeproj'
+          project = Xcodeproj::Project.open(project_path)
+          
+          # 1. 遍历 Targets，精准狙击主工程，绝不误伤 SPM 第三方库
+          project.targets.each do |target|
+            if target.name == 'Lucky Pond'
+              target.build_configurations.each do |config|
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = '$PROFILE_NAME'
+                config.build_settings['DEVELOPMENT_TEAM'] = '$TEAM_ID'
+                config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+                config.build_settings['CODE_SIGN_IDENTITY'] = 'Apple Distribution'
+              end
+            end
+          end
+          
+          # 2. 强制关闭整个工程的底层自动签名开关
+          if project.root_object.attributes['TargetAttributes']
+            project.root_object.attributes['TargetAttributes'].each do |target_id, attributes|
+              attributes['ProvisioningStyle'] = 'Manual'
+            end
+          end
+          
+          project.save
+          "
+          echo "✅ 外科手术级签名配置写入完成！"
+      # 3. 编译与打包 (Archive) - 大道至简
+      - name: Build and Archive
+        run: |
+          # 核心：完全移除任何外力干预命令行，100% 信任你在本地配置好的工程！
+          xcodebuild archive -project "Lucky Pond/Lucky Pond.xcodeproj" \
+            -scheme "Lucky Pond" \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath "$PWD/build/App.xcarchive" \
+            clean archive
+
+      # 4. 导出 IPA 文件
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$PWD/build/App.xcarchive" \
+            -exportOptionsPlist "Lucky Pond/ExportOptions.plist" \
+            -exportPath "$PWD/build"
+
+      # 5. 上传到 App Store Connect
+      - name: Upload to App Store Connect
+        env:
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          API_KEY_ID: "5CCDRNAJ4D"      # 替换为在苹果后台生成的 10 位 Key ID (如 ABC123DEFG)
+          API_ISSUER_ID: "d0428e9b-85a7-429e-ac8d-0badbde25a87" # 替换为苹果后台的 Issuer ID (长串 UUID)
+        run: |
+          # 创建苹果要求的 API Key 存放目录
+          mkdir -p ~/.appstoreconnect/private_keys/
+          # 将 Secret 中的密钥内容还原为 .p8 文件
+          echo "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+          
+          # 动态寻找刚才打包生成的 ipa 文件路径
+          IPA_PATH=$(find $PWD/build -name "*.ipa" | head -n 1)
+          
+          # 使用 xcrun altool 进行自动化纯净上传
+          xcrun altool --upload-app -f "$IPA_PATH" -t ios --apiKey "$API_KEY_ID" --apiIssuer "$API_ISSUER_ID"
+
