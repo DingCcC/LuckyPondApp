@@ -2,7 +2,6 @@
 //  AppDelegate.swift
 //  Lucky Pond
 //
-//  Created by 莫子 on 2026/6/9.
 //
 
 import UIKit
