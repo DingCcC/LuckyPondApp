@@ -128,8 +128,8 @@ jobs:
       - name: Upload to App Store Connect
         env:
           API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
-          API_KEY_ID: "5CCDRNAJ4D"      # 替换为在苹果后台生成的 10 位 Key ID (如 ABC123DEFG)
-          API_ISSUER_ID: "d0428e9b-85a7-429e-ac8d-0badbde25a87" # 替换为苹果后台的 Issuer ID (长串 UUID)
+          API_KEY_ID: "BJMGNN2747"      # 替换为在苹果后台生成的 10 位 Key ID (如 ABC123DEFG) 
+          API_ISSUER_ID: "5bea8f11-4f0c-4787-be60-b2d61637d1d5" # 替换为苹果后台的 Issuer ID (长串 UUID)
         run: |
           # 创建苹果要求的 API Key 存放目录
           mkdir -p ~/.appstoreconnect/private_keys/
