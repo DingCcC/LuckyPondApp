@@ -255,17 +255,29 @@ struct LuckMeter: View {
     var compact: Bool = false
 
     var body: some View {
+        let harmony = min(100, ledger.waterline.reedVault.harmony)
+
         VStack(alignment: .leading, spacing: compact ? 3 : 4) {
             Text("Luck Meter")
                 .font(.caption2.weight(.bold))
-            ProgressWood(current: min(100, ledger.waterline.reedVault.harmony), total: 100, height: compact ? 6 : 7)
-            Text("\(max(1, ledger.waterline.comboChain + 1))x")
-                .font(.system(compact ? .subheadline : .headline, design: .serif).weight(.heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+            ProgressWood(current: harmony, total: 100, height: compact ? 7 : 8, showsValue: false)
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text("\(max(1, ledger.waterline.comboChain + 1))x")
+                    .font(.system(compact ? .subheadline : .headline, design: .serif).weight(.heavy))
+                Spacer(minLength: 4)
+                Text("\(harmony)/100")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(PondInk.wood.opacity(0.74))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.76)
+            }
         }
         .foregroundStyle(PondInk.inkText)
         .padding(.horizontal, compact ? 8 : 10)
         .padding(.vertical, compact ? 7 : 8)
-        .frame(width: compact ? 102 : 110, height: compact ? 56 : 62, alignment: .leading)
+        .frame(width: compact ? 118 : 128, height: compact ? 62 : 68, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(PondInk.parchmentLight.opacity(0.92))

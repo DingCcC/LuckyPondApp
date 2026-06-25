@@ -20,7 +20,7 @@ struct StartPondView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let compactStart = proxy.size.width >= 700 || proxy.size.height < 980
+            let compactStart = PondChromeSafeArea.usesPadChrome(in: proxy) || proxy.size.height < 980
             let topPadding = PondChromeSafeArea.top(in: proxy) + (compactStart ? 8 : 22)
             let bottomPadding = PondChromeSafeArea.bottom(in: proxy) + (compactStart ? 10 : 24)
             let verticalSpacing: CGFloat = compactStart ? 12 : 18
@@ -131,7 +131,7 @@ struct HomePondView: View {
     var openDock: (PondDock) -> Void
 
     var body: some View {
-        PondScreenScaffold(mood: .day, active: .home, openDock: openDock, horizontalPadding: 0, contentBottomPadding: 220) {
+        PondScreenScaffold(mood: .day, active: .home, openDock: openDock, horizontalPadding: 0, contentBottomPadding: 18) {
             VStack(spacing: 14) {
                 LuckyPondLogo(compact: true)
                     .padding(.top, 6)

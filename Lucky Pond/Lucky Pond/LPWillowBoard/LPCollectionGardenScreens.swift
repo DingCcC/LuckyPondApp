@@ -85,7 +85,7 @@ struct PondDecorationView: View {
             mood: .day,
             active: .pondGarden,
             openDock: openDock,
-            contentBottomPadding: 312
+            contentBottomPadding: 18
         ) {
             VStack(spacing: 12) {
                 HeaderRow(title: "Pond Decoration", subtitle: "Design your pond, attract luck.", openDock: openDock)

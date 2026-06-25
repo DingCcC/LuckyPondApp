@@ -389,6 +389,7 @@ struct ProgressWood: View {
     var current: Int
     var total: Int
     var height: CGFloat = 12
+    var showsValue: Bool = true
 
     var body: some View {
         GeometryReader { proxy in
@@ -398,10 +399,12 @@ struct ProgressWood: View {
                 Capsule()
                     .fill(LinearGradient(colors: [PondInk.reed, Color(red: 0.32, green: 0.50, blue: 0.15)], startPoint: .leading, endPoint: .trailing))
                     .frame(width: width)
-                Text("\(min(current, total))/\(total)")
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(PondInk.creamText)
-                    .frame(maxWidth: .infinity)
+                if showsValue {
+                    Text("\(min(current, total))/\(total)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(PondInk.creamText)
+                        .frame(maxWidth: .infinity)
+                }
             }
         }
         .frame(height: height)

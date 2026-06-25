@@ -213,7 +213,7 @@ struct SettingsPondView: View {
     var openDock: (PondDock) -> Void
 
     var body: some View {
-        PondScreenScaffold(mood: .night, active: .settings, openDock: openDock, contentBottomPadding: 132) {
+        PondScreenScaffold(mood: .night, active: .settings, openDock: openDock, contentBottomPadding: 18) {
             VStack(spacing: 12) {
                 HeaderRow(title: "Settings", subtitle: "Local preferences and pond notes.", rightSystemImage: "house.fill", rightDock: .home, openDock: openDock)
                 ParchmentPanel {

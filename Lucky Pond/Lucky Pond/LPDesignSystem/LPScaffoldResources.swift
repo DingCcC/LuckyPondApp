@@ -1,14 +1,39 @@
 import SwiftUI
 
 enum PondChromeSafeArea {
+    private static var isRunningOnIPadHardware: Bool {
+        let model = UIDevice.current.model.lowercased()
+        let localizedModel = UIDevice.current.localizedModel.lowercased()
+        return UIDevice.current.userInterfaceIdiom == .pad
+            || model.contains("ipad")
+            || localizedModel.contains("ipad")
+    }
+
+    static func usesPadChrome(in proxy: GeometryProxy) -> Bool {
+        isRunningOnIPadHardware || proxy.size.width >= 700
+    }
+
+    static func usesCompactPhoneChrome(in proxy: GeometryProxy) -> Bool {
+        !usesPadChrome(in: proxy) && proxy.size.width < 430
+    }
+
     static func top(in proxy: GeometryProxy) -> CGFloat {
-        let compatibilityTop: CGFloat = proxy.size.width >= 700 ? 86 : 58
+        let compatibilityTop: CGFloat = usesPadChrome(in: proxy) ? 86 : 58
         return max(proxy.safeAreaInsets.top, compatibilityTop)
     }
 
     static func bottom(in proxy: GeometryProxy) -> CGFloat {
-        let compatibilityBottom: CGFloat = proxy.size.width >= 700 ? 86 : 56
+        let compatibilityBottom: CGFloat = usesPadChrome(in: proxy) ? 72 : 18
         return max(proxy.safeAreaInsets.bottom, compatibilityBottom)
+    }
+
+    static func dockBottom(in proxy: GeometryProxy) -> CGFloat {
+        let compatibilityBottom: CGFloat = usesPadChrome(in: proxy) ? 28 : 12
+        return max(proxy.safeAreaInsets.bottom, compatibilityBottom)
+    }
+
+    static func dockHeight(in proxy: GeometryProxy) -> CGFloat {
+        usesCompactPhoneChrome(in: proxy) ? 72 : 78
     }
 }
 
@@ -31,7 +56,7 @@ struct PondScreenScaffold<Content: View, BottomAccessory: View>: View {
     var active: PondDock
     var openDock: (PondDock) -> Void
     var horizontalPadding: CGFloat = 12
-    var contentBottomPadding: CGFloat = 112
+    var contentBottomPadding: CGFloat = 18
     @ViewBuilder var content: Content
     @ViewBuilder var bottomAccessory: BottomAccessory
 
@@ -40,7 +65,7 @@ struct PondScreenScaffold<Content: View, BottomAccessory: View>: View {
         active: PondDock,
         openDock: @escaping (PondDock) -> Void,
         horizontalPadding: CGFloat = 12,
-        contentBottomPadding: CGFloat = 112,
+        contentBottomPadding: CGFloat = 18,
         @ViewBuilder content: () -> Content,
         @ViewBuilder bottomAccessory: () -> BottomAccessory
     ) {
@@ -56,28 +81,36 @@ struct PondScreenScaffold<Content: View, BottomAccessory: View>: View {
     var body: some View {
         GeometryReader { proxy in
             let topPadding = PondChromeSafeArea.top(in: proxy) + 28
-            let bottomPadding = PondChromeSafeArea.bottom(in: proxy)
+            let dockBottomPadding = PondChromeSafeArea.dockBottom(in: proxy)
+            let dockHeight = PondChromeSafeArea.dockHeight(in: proxy)
+            let usesPadChrome = PondChromeSafeArea.usesPadChrome(in: proxy)
+            let compactDock = PondChromeSafeArea.usesCompactPhoneChrome(in: proxy)
+            let dockHorizontalPadding: CGFloat = usesPadChrome ? 32 : 20
+            let chromeTopGap: CGFloat = compactDock ? 16 : 14
 
             ZStack {
                 PondBackdrop(mood: mood)
 
-                VStack(spacing: 8) {
+                VStack(spacing: 0) {
                     ResourceBar()
                         .padding(.top, topPadding)
+                        .padding(.bottom, 8)
 
                     ScrollView(showsIndicators: false) {
                         content
                             .padding(.horizontal, horizontalPadding)
-                            .padding(.bottom, contentBottomPadding + bottomPadding)
+                            .padding(.bottom, contentBottomPadding)
                     }
-                }
+                    .clipped()
+                    .padding(.bottom, chromeTopGap)
 
-                VStack(spacing: 0) {
-                    Spacer(minLength: 0)
                     bottomAccessory
-                    BottomDock(active: active, openDock: openDock)
-                        .padding(.bottom, bottomPadding)
+                    BottomDock(active: active, openDock: openDock, compact: compactDock)
+                        .frame(height: dockHeight)
+                        .padding(.horizontal, dockHorizontalPadding)
+                        .padding(.bottom, dockBottomPadding)
                 }
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
@@ -90,7 +123,7 @@ extension PondScreenScaffold where BottomAccessory == EmptyView {
         active: PondDock,
         openDock: @escaping (PondDock) -> Void,
         horizontalPadding: CGFloat = 12,
-        contentBottomPadding: CGFloat = 112,
+        contentBottomPadding: CGFloat = 18,
         @ViewBuilder content: () -> Content
     ) {
         self.mood = mood

@@ -38,11 +38,12 @@ struct GameplayPondView: View {
 
     @ViewBuilder
     private func stackedGameplay(in proxy: GeometryProxy) -> some View {
-        let compactHeight = proxy.size.height < 900 || proxy.size.width >= 700
+        let usesPadChrome = PondChromeSafeArea.usesPadChrome(in: proxy)
+        let compactHeight = proxy.size.height < 900 || usesPadChrome
         let horizontalInset = min(28, max(16, proxy.size.width * 0.04))
         let topInset = PondChromeSafeArea.top(in: proxy) + (compactHeight ? 24 : 18)
         let bottomInset = PondChromeSafeArea.bottom(in: proxy) + (compactHeight ? 16 : 12)
-        let resourceWidth = min(proxy.size.width - horizontalInset * 2.6, proxy.size.width >= 700 ? 560 : 620)
+        let resourceWidth = min(proxy.size.width - horizontalInset * 2.6, usesPadChrome ? 560 : 620)
         let hudY = topInset + 24
         let waterTop = topInset + (compactHeight ? 76 : 82)
         let noticeHeight: CGFloat = compactHeight ? 31 : 34
@@ -73,7 +74,7 @@ struct GameplayPondView: View {
                 .position(x: horizontalInset + 28, y: topHudRowY)
 
             LuckMeter(compact: compactHeight)
-                .position(x: horizontalInset + (compactHeight ? 104 : 116), y: topHudRowY)
+                .position(x: horizontalInset + (compactHeight ? 116 : 126), y: topHudRowY)
 
             ReelPanel(compact: compactHeight)
                 .frame(width: min(compactHeight ? 184 : 214, proxy.size.width * 0.50))
@@ -110,7 +111,7 @@ struct GameplayPondView: View {
 
     @ViewBuilder
     private func sidePanelGameplay(in proxy: GeometryProxy) -> some View {
-        let compactHeight = proxy.size.height < 900 || proxy.size.width >= 900
+        let compactHeight = proxy.size.height < 900 || PondChromeSafeArea.usesPadChrome(in: proxy)
         let outerInset = min(28, max(16, proxy.size.width * 0.025))
         let topInset = PondChromeSafeArea.top(in: proxy) + (compactHeight ? 20 : 16)
         let bottomInset = PondChromeSafeArea.bottom(in: proxy) + (compactHeight ? 14 : 12)
@@ -330,17 +331,21 @@ struct RewardPondView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let compactReward = proxy.size.width >= 700 || proxy.size.height < 980
-            let topPadding = PondChromeSafeArea.top(in: proxy) + (compactReward ? 30 : 24)
+            let usesPadChrome = PondChromeSafeArea.usesPadChrome(in: proxy)
+            let compactReward = usesPadChrome || proxy.size.height < 980
+            let rewardTopInset = usesPadChrome
+                ? min(max(proxy.safeAreaInsets.top, 24), 42)
+                : max(proxy.safeAreaInsets.top, 38)
+            let topPadding = rewardTopInset + (compactReward ? 4 : 8)
             let bottomPadding = PondChromeSafeArea.bottom(in: proxy) + (compactReward ? 28 : 20)
             let contentWidth = min(proxy.size.width - (compactReward ? 70 : 36), compactReward ? 620 : 700)
             let emblemSize: CGFloat = compactReward ? 68 : 82
-            let contentSpacing: CGFloat = compactReward ? 14 : 18
+            let contentSpacing: CGFloat = compactReward ? 12 : 18
 
             ZStack {
                 PondBackdrop(mood: .night)
 
-                VStack(spacing: compactReward ? 10 : 12) {
+                VStack(spacing: compactReward ? 6 : 12) {
                     ResourceBar()
                         .frame(width: min(proxy.size.width - 72, compactReward ? 560 : 640))
                         .padding(.top, topPadding)
@@ -390,7 +395,7 @@ struct RewardPondView: View {
                         }
                         .frame(width: contentWidth)
                         .frame(maxWidth: .infinity)
-                        .padding(.top, compactReward ? 8 : 12)
+                        .padding(.top, compactReward ? 2 : 12)
                         .padding(.bottom, bottomPadding)
                     }
                 }
