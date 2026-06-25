@@ -252,19 +252,20 @@ struct PondRoleGlyph: View {
 
 struct LuckMeter: View {
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: compact ? 3 : 4) {
             Text("Luck Meter")
                 .font(.caption2.weight(.bold))
-            ProgressWood(current: min(100, ledger.waterline.reedVault.harmony), total: 100, height: 7)
+            ProgressWood(current: min(100, ledger.waterline.reedVault.harmony), total: 100, height: compact ? 6 : 7)
             Text("\(max(1, ledger.waterline.comboChain + 1))x")
-                .font(.system(.headline, design: .serif).weight(.heavy))
+                .font(.system(compact ? .subheadline : .headline, design: .serif).weight(.heavy))
         }
         .foregroundStyle(PondInk.inkText)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .frame(width: 110, height: 62, alignment: .leading)
+        .padding(.horizontal, compact ? 8 : 10)
+        .padding(.vertical, compact ? 7 : 8)
+        .frame(width: compact ? 102 : 110, height: compact ? 56 : 62, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(PondInk.parchmentLight.opacity(0.92))
@@ -551,9 +552,9 @@ struct PassiveTutorialPondOverlay: View {
         if shouldShowTutorial {
             VStack {
                 if activeDock == .gameplay {
-                    hintCard
-                        .padding(.top, 112)
                     Spacer()
+                    hintCard
+                        .padding(.bottom, 292)
                 } else {
                     Spacer()
                     hintCard
@@ -629,21 +630,22 @@ struct PassiveTutorialPondOverlay: View {
 
 struct ReelPanel: View {
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: compact ? 5 : 6) {
             Text("Catch Reel")
-                .font(.system(.subheadline, design: .serif).weight(.heavy))
+                .font(.system(compact ? .caption : .subheadline, design: .serif).weight(.heavy))
                 .foregroundStyle(PondInk.creamText)
                 .shadow(color: .black.opacity(0.38), radius: 2, x: 0, y: 1)
-            HStack(spacing: 10) {
+            HStack(spacing: compact ? 8 : 10) {
                 ForEach(0..<3, id: \.self) { slotIndex in
-                    LPEmblemSealView(emblem: slotIndex < ledger.waterline.catchReel.count ? ledger.waterline.catchReel[slotIndex] : nil, size: 48)
+                    LPEmblemSealView(emblem: slotIndex < ledger.waterline.catchReel.count ? ledger.waterline.catchReel[slotIndex] : nil, size: compact ? 42 : 48)
                 }
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 12)
+        .padding(.horizontal, compact ? 14 : 18)
+        .padding(.vertical, compact ? 10 : 12)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(LinearGradient(colors: [Color(red: 0.43, green: 0.24, blue: 0.10), PondInk.woodDeep], startPoint: .top, endPoint: .bottom))
@@ -659,11 +661,12 @@ struct ReelPanel: View {
 
 struct JackpotForecastPill: View {
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
-        HStack(spacing: 8) {
-            LPEmblemSealView(emblem: ledger.nextJackpotEmblem, size: 28)
-            VStack(alignment: .leading, spacing: 1) {
+        HStack(spacing: compact ? 6 : 8) {
+            LPEmblemSealView(emblem: ledger.nextJackpotEmblem, size: compact ? 24 : 28)
+            VStack(alignment: .leading, spacing: compact ? 0 : 1) {
                 Text("Lucky Mark")
                     .font(.caption2.weight(.heavy))
                 Text(ledger.castsUntilJackpot <= 1 ? "next cast" : "in \(ledger.castsUntilJackpot) casts")
@@ -676,14 +679,14 @@ struct JackpotForecastPill: View {
                     Image(emblem.assetName)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: compact ? 15 : 18, height: compact ? 15 : 18)
                         .opacity(emblem == ledger.nextJackpotEmblem ? 1 : 0.42)
                 }
             }
         }
         .foregroundStyle(PondInk.creamText)
-        .padding(.vertical, 5)
-        .padding(.horizontal, 10)
+        .padding(.vertical, compact ? 4 : 5)
+        .padding(.horizontal, compact ? 8 : 10)
         .background(
             Capsule()
                 .fill(PondInk.woodDeep.opacity(0.78))
@@ -696,37 +699,39 @@ struct JackpotForecastPill: View {
 
 struct TodayBestSign: View {
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
-        ParchmentPanel(inset: 8) {
-            VStack(spacing: 3) {
+        ParchmentPanel(inset: compact ? 6 : 8) {
+            VStack(spacing: compact ? 2 : 3) {
                 Text("Today's Best")
-                    .font(.caption.weight(.bold))
+                    .font((compact ? Font.caption2 : Font.caption).weight(.bold))
                 Text(String(format: "%.1f kg", ledger.waterline.progressRipple.bestCatchWeight))
-                    .font(.system(.title3, design: .serif).weight(.heavy))
+                    .font(.system(compact ? .headline : .title3, design: .serif).weight(.heavy))
                 Text("Record: 18.4 kg")
                     .font(.caption2)
             }
             .foregroundStyle(PondInk.inkText)
-            .frame(width: 104)
+            .frame(width: compact ? 92 : 104)
         }
     }
 }
 
 struct ComboSign: View {
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: compact ? 1 : 2) {
             Text("Combo")
                 .font(.caption2.weight(.bold))
             Text("x\(max(1, ledger.waterline.comboChain))")
-                .font(.system(.headline, design: .serif).weight(.heavy))
+                .font(.system(compact ? .subheadline : .headline, design: .serif).weight(.heavy))
             Text("+\(ledger.waterline.comboChain * 10)%")
                 .font(.caption2.weight(.bold))
         }
         .foregroundStyle(PondInk.creamText)
-        .frame(width: 76, height: 64)
+        .frame(width: compact ? 68 : 76, height: compact ? 58 : 64)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .fill(LinearGradient(colors: [Color(red: 0.44, green: 0.24, blue: 0.10).opacity(0.94), PondInk.woodDeep.opacity(0.94)], startPoint: .top, endPoint: .bottom))
@@ -739,6 +744,7 @@ struct ComboSign: View {
 struct BaitStrip: View {
     @Binding var selectedBait: BaitKind
     @EnvironmentObject private var ledger: RippleLedger
+    var compact: Bool = false
 
     var body: some View {
         ZStack {
@@ -760,11 +766,11 @@ struct BaitStrip: View {
                 )
                 .stroke(PondInk.gold.opacity(0.56), lineWidth: 1.2)
             )
-            VStack(spacing: 7) {
+            VStack(spacing: compact ? 4 : 7) {
                 Text("Bait Rack")
-                    .font(.caption.weight(.heavy))
+                    .font((compact ? Font.caption2 : Font.caption).weight(.heavy))
                     .foregroundStyle(PondInk.parchmentLight)
-                HStack(spacing: 8) {
+                HStack(spacing: compact ? 6 : 8) {
                     ForEach(BaitKind.allCases) { baitKind in
                         let isSelected = selectedBait == baitKind
                         let count = ledger.waterline.reedVault.bait[baitKind.rawValue, default: 0]
@@ -780,9 +786,9 @@ struct BaitStrip: View {
                                                 .stroke(isSelected ? PondInk.gold : PondInk.parchmentLight.opacity(0.25), lineWidth: isSelected ? 1.8 : 1)
                                         )
                                     BaitGlyphView(baitKind: baitKind)
-                                        .frame(width: isSelected ? 34 : 30, height: isSelected ? 34 : 30)
+                                        .frame(width: compact ? (isSelected ? 30 : 27) : (isSelected ? 34 : 30), height: compact ? (isSelected ? 30 : 27) : (isSelected ? 34 : 30))
                                 }
-                                .frame(height: 34)
+                                .frame(height: compact ? 30 : 34)
                                 Text(baitKind.shortName)
                                     .font(.caption2.weight(.heavy))
                                     .lineLimit(1)
@@ -793,7 +799,7 @@ struct BaitStrip: View {
                             }
                             .foregroundStyle(isSelected ? PondInk.gold : PondInk.creamText)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
+                            .padding(.vertical, compact ? 4 : 6)
                             .background(
                                 UnevenRoundedRectangle(
                                     topLeadingRadius: 6,
@@ -820,8 +826,8 @@ struct BaitStrip: View {
                     }
                 }
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
+            .padding(.horizontal, compact ? 8 : 10)
+            .padding(.vertical, compact ? 6 : 8)
         }
     }
 }
@@ -831,25 +837,26 @@ struct SkillButton: View {
     var emblem: LPEmblem
     var count: Int
     var isDisabled: Bool = false
+    var compact: Bool = false
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: compact ? 2 : 4) {
                 ZStack {
-                    LPEmblemSealView(emblem: emblem, size: 38)
+                    LPEmblemSealView(emblem: emblem, size: compact ? 32 : 38)
                         .opacity(isDisabled ? 0.45 : 1)
                 }
-                .frame(width: 40, height: 34)
+                .frame(width: compact ? 34 : 40, height: compact ? 30 : 34)
                 Text(title)
-                    .font(.caption.weight(.heavy))
+                    .font((compact ? Font.caption2 : Font.caption).weight(.heavy))
                     .lineLimit(1)
                     .minimumScaleFactor(0.72)
                 Text("\(count) left")
                     .font(.caption2.weight(.bold))
             }
             .foregroundStyle(isDisabled ? PondInk.inkText.opacity(0.42) : PondInk.inkText)
-            .frame(maxWidth: .infinity, minHeight: 76)
+            .frame(maxWidth: .infinity, minHeight: compact ? 66 : 76)
             .background(
                 UnevenRoundedRectangle(
                     topLeadingRadius: 6,

@@ -19,50 +19,103 @@ struct StartPondView: View {
     var enterPond: () -> Void
 
     var body: some View {
-        ZStack {
-            PondBackdrop(mood: .dawn)
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 18) {
-                    Spacer(minLength: 36)
-                    LuckyPondLogo()
+        GeometryReader { proxy in
+            let compactStart = proxy.size.width >= 700 || proxy.size.height < 980
+            let topPadding = PondChromeSafeArea.top(in: proxy) + (compactStart ? 8 : 22)
+            let bottomPadding = PondChromeSafeArea.bottom(in: proxy) + (compactStart ? 10 : 24)
+            let verticalSpacing: CGFloat = compactStart ? 12 : 18
 
-                    StartCatchShowcase()
+            ZStack {
+                PondBackdrop(mood: .dawn)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: verticalSpacing) {
+                        Spacer(minLength: topPadding)
+                        LuckyPondLogo(compact: compactStart)
+
+                        StartCatchShowcase()
+                            .padding(.horizontal, compactStart ? 36 : 24)
+
+                        ParchmentPanel {
+                            VStack(spacing: 10) {
+                                Text("Cast • Match • Collect")
+                                    .font(.system(.title3, design: .serif).weight(.bold))
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.seal.fill")
+                                        .foregroundStyle(PondInk.moss)
+                                    Text("Pond Ready")
+                                        .font(.system(.headline, design: .serif).weight(.bold))
+                                }
+                                Text("Tip: Matching 3 rare emblem fish increases your combo rewards.")
+                                    .font(.system(.subheadline, design: .serif))
+                                    .multilineTextAlignment(.center)
+                                Text("No login is required. Your pond is saved locally.")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(PondInk.inkText.opacity(0.72))
+                            }
+                            .foregroundStyle(PondInk.inkText)
+                        }
                         .padding(.horizontal, 24)
 
-                    ParchmentPanel {
-                        VStack(spacing: 10) {
-                            Text("Cast • Match • Collect")
-                                .font(.system(.title3, design: .serif).weight(.bold))
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.seal.fill")
-                                    .foregroundStyle(PondInk.moss)
-                                Text("Pond Ready")
-                                    .font(.system(.headline, design: .serif).weight(.bold))
+                        if compactStart {
+                            HStack(spacing: 12) {
+                                CompactStartActionButton(title: "START", systemImage: "hand.tap.fill", isPrimary: true, action: enterPond)
+                                CompactStartActionButton(title: "GUEST", systemImage: "person.fill", action: enterPond)
                             }
-                            Text("Tip: Matching 3 rare emblem fish increases your combo rewards.")
-                                .font(.system(.subheadline, design: .serif))
-                                .multilineTextAlignment(.center)
-                            Text("No login is required. Your pond is saved locally.")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(PondInk.inkText.opacity(0.72))
+                            .padding(.horizontal, 28)
+                        } else {
+                            PondButton(title: "TAP TO START", systemImage: "hand.tap.fill", isPrimary: true, action: enterPond)
+                                .padding(.horizontal, 34)
+                            PondButton(title: "PLAY AS GUEST", systemImage: "person.fill", action: enterPond)
+                                .padding(.horizontal, 70)
                         }
-                        .foregroundStyle(PondInk.inkText)
+
+                        Text("v\(Bundle.main.pondVersionText)")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(PondInk.creamText.opacity(0.7))
+                        Spacer(minLength: bottomPadding)
                     }
-                    .padding(.horizontal, 24)
-
-                    PondButton(title: "TAP TO START", systemImage: "hand.tap.fill", isPrimary: true, action: enterPond)
-                        .padding(.horizontal, 34)
-                    PondButton(title: "PLAY AS GUEST", systemImage: "person.fill", action: enterPond)
-                        .padding(.horizontal, 70)
-
-                    Text("v\(Bundle.main.pondVersionText)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(PondInk.creamText.opacity(0.7))
-                    Spacer(minLength: 34)
                 }
-                .padding(.vertical, 18)
             }
         }
+    }
+}
+
+struct CompactStartActionButton: View {
+    var title: String
+    var systemImage: String
+    var isPrimary: Bool = false
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 20, weight: .heavy))
+                Text(title)
+                    .font(.system(.title3, design: .serif).weight(.heavy))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+            }
+            .foregroundStyle(PondInk.creamText)
+            .frame(maxWidth: .infinity)
+            .frame(height: 62)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: isPrimary
+                                ? [Color(red: 0.42, green: 0.56, blue: 0.14), Color(red: 0.18, green: 0.32, blue: 0.08)]
+                                : [PondInk.wood, PondInk.woodDeep],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(PondInk.gold.opacity(0.78), lineWidth: 1.5))
+                    .shadow(color: .black.opacity(0.20), radius: 4, x: 0, y: 2)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(PondPressButtonStyle())
     }
 }
 

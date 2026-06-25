@@ -25,7 +25,6 @@ struct BottomDock: View {
                     .resizable(capInsets: EdgeInsets(top: 28, leading: 42, bottom: 28, trailing: 42), resizingMode: .stretch)
                     .overlay(Rectangle().fill(PondInk.woodDeep.opacity(0.06)))
             }
-            .ignoresSafeArea(edges: .bottom)
         )
     }
 }

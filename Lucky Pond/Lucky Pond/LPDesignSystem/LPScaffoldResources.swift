@@ -1,5 +1,17 @@
 import SwiftUI
 
+enum PondChromeSafeArea {
+    static func top(in proxy: GeometryProxy) -> CGFloat {
+        let compatibilityTop: CGFloat = proxy.size.width >= 700 ? 86 : 58
+        return max(proxy.safeAreaInsets.top, compatibilityTop)
+    }
+
+    static func bottom(in proxy: GeometryProxy) -> CGFloat {
+        let compatibilityBottom: CGFloat = proxy.size.width >= 700 ? 86 : 56
+        return max(proxy.safeAreaInsets.bottom, compatibilityBottom)
+    }
+}
+
 struct ResourceBar: View {
     @EnvironmentObject private var ledger: RippleLedger
 
@@ -43,7 +55,8 @@ struct PondScreenScaffold<Content: View, BottomAccessory: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let topPadding = max(proxy.safeAreaInsets.top + 24, 92)
+            let topPadding = PondChromeSafeArea.top(in: proxy) + 28
+            let bottomPadding = PondChromeSafeArea.bottom(in: proxy)
 
             ZStack {
                 PondBackdrop(mood: mood)
@@ -55,17 +68,18 @@ struct PondScreenScaffold<Content: View, BottomAccessory: View>: View {
                     ScrollView(showsIndicators: false) {
                         content
                             .padding(.horizontal, horizontalPadding)
-                            .padding(.bottom, contentBottomPadding)
+                            .padding(.bottom, contentBottomPadding + bottomPadding)
                     }
+                }
+
+                VStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    bottomAccessory
+                    BottomDock(active: active, openDock: openDock)
+                        .padding(.bottom, bottomPadding)
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            VStack(spacing: 0) {
-                bottomAccessory
-                BottomDock(active: active, openDock: openDock)
-            }
         }
     }
 }
