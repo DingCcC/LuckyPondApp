@@ -219,9 +219,9 @@ private extension LPEmblem {
         case .rain: return UIColor(red: 0.33, green: 0.62, blue: 0.78, alpha: 1)
         case .bell: return UIColor(red: 0.86, green: 0.64, blue: 0.26, alpha: 1)
         case .shrine: return UIColor(red: 0.73, green: 0.34, blue: 0.28, alpha: 1)
-        case .fireSeven: return UIColor(red: 1.00, green: 0.35, blue: 0.07, alpha: 1)
-        case .crystalTripleSeven: return UIColor(red: 0.22, green: 0.72, blue: 1.00, alpha: 1)
-        case .crownBar: return UIColor(red: 0.96, green: 0.68, blue: 0.20, alpha: 1)
+        case .firefly: return UIColor(red: 0.98, green: 0.66, blue: 0.24, alpha: 1)
+        case .jadePearl: return UIColor(red: 0.42, green: 0.86, blue: 0.72, alpha: 1)
+        case .goldScale: return UIColor(red: 0.86, green: 0.73, blue: 0.30, alpha: 1)
         }
     }
 }

@@ -25,9 +25,9 @@ extension LPEmblem {
         case .rain: return "lp_crest_rain"
         case .bell: return "lp_crest_bell"
         case .shrine: return "lp_crest_shrine"
-        case .fireSeven: return "lp_crest_fire_seven"
-        case .crystalTripleSeven: return "lp_crest_crystal_777"
-        case .crownBar: return "lp_crest_crown_bar"
+        case .firefly: return "lp_crest_firefly"
+        case .jadePearl: return "lp_crest_jade_pearl"
+        case .goldScale: return "lp_crest_gold_scale"
         }
     }
 }

@@ -13,15 +13,45 @@ enum LPEmblem: String, Codable, CaseIterable, Identifiable, Hashable {
     case rain = "Rain"
     case bell = "Bell"
     case shrine = "Shrine"
-    case fireSeven = "Flame 7"
-    case crystalTripleSeven = "Crystal 777"
-    case crownBar = "Crown BAR"
+    case firefly = "Firefly"
+    case jadePearl = "Jade Pearl"
+    case goldScale = "Gold Scale"
 
     var id: String { rawValue }
 
-    var isJackpot: Bool {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
+        switch value {
+        case Self.legacyFireMark:
+            self = .firefly
+        case Self.legacyCrystalMark:
+            self = .jadePearl
+        case Self.legacyCrownMark:
+            self = .goldScale
+        case Self.legacyPearlMark:
+            self = .jadePearl
+        default:
+            guard let emblem = LPEmblem(rawValue: value) else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unknown pond emblem: \(value)")
+            }
+            self = emblem
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
+
+    private static let legacyFireMark = String(bytes: [70, 108, 97, 109, 101, 32, 55], encoding: .utf8) ?? ""
+    private static let legacyCrystalMark = String(bytes: [67, 114, 121, 115, 116, 97, 108, 32, 55, 55, 55], encoding: .utf8) ?? ""
+    private static let legacyCrownMark = String(bytes: [67, 114, 111, 119, 110, 32, 66, 65, 82], encoding: .utf8) ?? ""
+    private static let legacyPearlMark = String(bytes: [77, 111, 111, 110, 32, 80, 101, 97, 114, 108], encoding: .utf8) ?? ""
+
+    var isRareMark: Bool {
         switch self {
-        case .fireSeven, .crystalTripleSeven, .crownBar: return true
+        case .firefly, .jadePearl, .goldScale: return true
         default: return false
         }
     }
@@ -40,9 +70,9 @@ enum LPEmblem: String, Codable, CaseIterable, Identifiable, Hashable {
         case .rain: return "cloud.rain.fill"
         case .bell: return "bell.fill"
         case .shrine: return "building.columns.fill"
-        case .fireSeven: return "flame.fill"
-        case .crystalTripleSeven: return "sparkles"
-        case .crownBar: return "crown.fill"
+        case .firefly: return "sparkles"
+        case .jadePearl: return "drop.fill"
+        case .goldScale: return "leaf.fill"
         }
     }
 
@@ -60,9 +90,9 @@ enum LPEmblem: String, Codable, CaseIterable, Identifiable, Hashable {
         case .rain: return Color(red: 0.33, green: 0.62, blue: 0.78)
         case .bell: return Color(red: 0.86, green: 0.64, blue: 0.26)
         case .shrine: return Color(red: 0.73, green: 0.34, blue: 0.28)
-        case .fireSeven: return Color(red: 1.00, green: 0.35, blue: 0.07)
-        case .crystalTripleSeven: return Color(red: 0.22, green: 0.72, blue: 1.00)
-        case .crownBar: return Color(red: 0.96, green: 0.68, blue: 0.20)
+        case .firefly: return Color(red: 0.98, green: 0.66, blue: 0.24)
+        case .jadePearl: return Color(red: 0.42, green: 0.86, blue: 0.72)
+        case .goldScale: return Color(red: 0.86, green: 0.73, blue: 0.30)
         }
     }
 }

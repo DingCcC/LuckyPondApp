@@ -152,14 +152,14 @@ final class RippleLedger: ObservableObject {
         max(100, ((waterline.reedVault.harmony / 25) + 1) * 25)
     }
 
-    var castsUntilJackpot: Int {
+    var castsUntilRareMark: Int {
         let nextCatch = waterline.progressRipple.totalCatches + 1
         let remainder = nextCatch % 5
         return remainder == 0 ? 1 : 5 - remainder + 1
     }
 
-    var nextJackpotEmblem: LPEmblem {
-        scheduledJackpotEmblem(forCatchNumber: waterline.progressRipple.totalCatches + castsUntilJackpot) ?? .fireSeven
+    var nextRareMarkEmblem: LPEmblem {
+        scheduledRareMarkEmblem(forCatchNumber: waterline.progressRipple.totalCatches + castsUntilRareMark) ?? .firefly
     }
 
     func saveRipple() {
@@ -546,8 +546,8 @@ final class RippleLedger: ObservableObject {
     }
 
     private func chooseReelEmblem(for koi: KoiPattern, baitKind: BaitKind, baitIsAvailable: Bool) -> LPEmblem {
-        if let scheduledJackpot = scheduledJackpotEmblem(forCatchNumber: waterline.progressRipple.totalCatches) {
-            return scheduledJackpot
+        if let scheduledRareMark = scheduledRareMarkEmblem(forCatchNumber: waterline.progressRipple.totalCatches) {
+            return scheduledRareMark
         }
 
         let harmonyLift = min(0.026, Double(waterline.reedVault.harmony) / 4200.0)
@@ -564,24 +564,24 @@ final class RippleLedger: ObservableObject {
             return koi.emblem
         }
 
-        let jackpotPool: [(emblem: LPEmblem, weight: Double)] = [
-            (.fireSeven, 54),
-            (.crownBar, 29),
-            (.crystalTripleSeven, 17)
+        let rareMarkPool: [(emblem: LPEmblem, weight: Double)] = [
+            (.firefly, 54),
+            (.goldScale, 29),
+            (.jadePearl, 17)
         ]
-        let totalWeight = jackpotPool.reduce(0) { $0 + $1.weight }
+        let totalWeight = rareMarkPool.reduce(0) { $0 + $1.weight }
         var roll = Double.random(in: 0..<totalWeight)
-        for option in jackpotPool {
+        for option in rareMarkPool {
             roll -= option.weight
             if roll <= 0 { return option.emblem }
         }
-        return .fireSeven
+        return .firefly
     }
 
-    private func scheduledJackpotEmblem(forCatchNumber catchNumber: Int) -> LPEmblem? {
+    private func scheduledRareMarkEmblem(forCatchNumber catchNumber: Int) -> LPEmblem? {
         guard catchNumber > 0, catchNumber % 5 == 0 else { return nil }
-        if catchNumber % 15 == 0 { return .crystalTripleSeven }
-        if catchNumber % 10 == 0 { return .crownBar }
-        return .fireSeven
+        if catchNumber % 15 == 0 { return .jadePearl }
+        if catchNumber % 10 == 0 { return .goldScale }
+        return .firefly
     }
 }

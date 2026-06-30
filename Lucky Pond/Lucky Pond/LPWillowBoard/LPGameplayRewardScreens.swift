@@ -53,10 +53,9 @@ struct GameplayPondView: View {
         let controlsHeight = noticeHeight + baitHeight + actionHeight + controlGap * 2
         let controlsTop = proxy.size.height - bottomInset - controlsHeight
         let stageHeight = max(compactHeight ? 220 : 280, controlsTop - waterTop - controlGap)
-        let stageCenterY = waterTop + stageHeight / 2
         let topHudRowY = waterTop + min(compactHeight ? 44 : 54, stageHeight * 0.17)
         let reelY = waterTop + min(compactHeight ? 144 : 164, stageHeight * 0.34)
-        let jackpotY = reelY + (compactHeight ? 68 : 76)
+        let rareMarkY = reelY + (compactHeight ? 68 : 76)
         let noticeY = controlsTop + noticeHeight / 2
         let baitY = noticeY + noticeHeight / 2 + controlGap + baitHeight / 2
         let actionY = baitY + baitHeight / 2 + controlGap + actionHeight / 2
@@ -67,8 +66,12 @@ struct GameplayPondView: View {
                 .frame(width: resourceWidth)
                 .position(x: proxy.size.width / 2, y: hudY)
 
-            gameplayStage(width: proxy.size.width - horizontalInset * 1.5, height: stageHeight)
-                .position(x: proxy.size.width / 2, y: stageCenterY)
+            gameplayStage(
+                width: proxy.size.width,
+                height: proxy.size.height,
+                swimVerticalRange: (waterTop / proxy.size.height)...(min(controlsTop, proxy.size.height) / proxy.size.height)
+            )
+            .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
 
             RoundPondButton(systemImage: "house.fill", size: compactHeight ? 36 : 40) { openDock(.home) }
                 .position(x: horizontalInset + 28, y: topHudRowY)
@@ -80,9 +83,9 @@ struct GameplayPondView: View {
                 .frame(width: min(compactHeight ? 184 : 214, proxy.size.width * 0.50))
                 .position(x: proxy.size.width / 2, y: reelY)
 
-            JackpotForecastPill(compact: compactHeight)
+            RareMarkForecastPill(compact: compactHeight)
                 .frame(width: min(compactHeight ? 206 : 232, proxy.size.width * 0.56))
-                .position(x: proxy.size.width / 2, y: jackpotY)
+                .position(x: proxy.size.width / 2, y: rareMarkY)
 
             ComboSign(compact: compactHeight)
                 .position(x: proxy.size.width - horizontalInset - (compactHeight ? 39 : 42), y: topHudRowY)
@@ -130,7 +133,7 @@ struct GameplayPondView: View {
                 .frame(width: min(proxy.size.width - outerInset * 2, 660))
                 .position(x: proxy.size.width / 2, y: hudY)
 
-            gameplayStage(width: stageWidth, height: contentHeight)
+            gameplayStage(width: stageWidth, height: contentHeight, swimVerticalRange: 0.04...0.96)
                 .position(x: stageCenterX, y: contentCenterY)
 
             VStack(spacing: compactHeight ? 8 : 10) {
@@ -144,7 +147,7 @@ struct GameplayPondView: View {
                 ReelPanel(compact: true)
                     .frame(maxWidth: .infinity)
 
-                JackpotForecastPill(compact: true)
+                RareMarkForecastPill(compact: true)
 
                 if !compactHeight {
                     TodayBestSign(compact: true)
@@ -167,14 +170,14 @@ struct GameplayPondView: View {
         .frame(width: proxy.size.width, height: proxy.size.height)
     }
 
-    private func gameplayStage(width: CGFloat, height: CGFloat) -> some View {
+    private func gameplayStage(width: CGFloat, height: CGFloat, swimVerticalRange: ClosedRange<CGFloat>) -> some View {
         ZStack {
-            GameplayWaterStage(latestCatch: latestCatch)
-            CastRodOverlay(latestCatch: latestCatch, selectedBait: selectedBait, isCasting: isCastingRod)
+            GameplayWaterStage(latestCatch: latestCatch, swimVerticalRange: swimVerticalRange)
+            CastRodOverlay(latestCatch: latestCatch, selectedBait: selectedBait, isCasting: isCastingRod, swimVerticalRange: swimVerticalRange)
         }
         .frame(width: width)
         .frame(height: height)
-        .clipped()
+        .allowsHitTesting(false)
     }
 
     private func noticeCapsule(width: CGFloat, compact: Bool) -> some View {
@@ -294,7 +297,7 @@ struct GameplayPondView: View {
         withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
             latestCatch = hookTally
             noEnergyPulse = false
-            if hookTally.emblem.isJackpot {
+            if hookTally.emblem.isRareMark {
                 skillNotice = "Lucky mark hit: \(hookTally.emblem.rawValue)"
             } else {
                 skillNotice = "Caught \(hookTally.koi.name) • \(String(format: "%.1f kg", hookTally.koiWeight))"

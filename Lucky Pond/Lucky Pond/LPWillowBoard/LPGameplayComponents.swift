@@ -301,46 +301,34 @@ struct GameplayResourceBar: View {
 
 struct GameplayWaterStage: View {
     var latestCatch: HookTally?
+    var swimVerticalRange: ClosedRange<CGFloat> = 0...1
 
     var body: some View {
         ZStack {
-            Image("premium_pond_day")
-                .resizable()
-                .scaledToFill()
-
             LinearGradient(
-                colors: [Color.clear, PondInk.pond.opacity(0.10), PondInk.pondDeep.opacity(0.18)],
+                colors: [Color.clear, PondInk.pond.opacity(0.045), PondInk.pondDeep.opacity(0.08), Color.clear],
                 startPoint: .top,
                 endPoint: .bottom
             )
+            .allowsHitTesting(false)
 
             WaterLines()
-                .stroke(Color.white.opacity(0.13), style: StrokeStyle(lineWidth: 1.1, lineCap: .round))
+                .stroke(Color.white.opacity(0.10), style: StrokeStyle(lineWidth: 1.0, lineCap: .round))
                 .padding(.horizontal, 18)
                 .padding(.vertical, 34)
                 .allowsHitTesting(false)
 
-            GameplayFishLayer(latestCatch: latestCatch)
+            GameplayFishLayer(latestCatch: latestCatch, swimVerticalRange: swimVerticalRange)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(PondInk.gold.opacity(0.76), lineWidth: 1.8)
-        )
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(LinearGradient(colors: [.clear, PondInk.woodDeep.opacity(0.55)], startPoint: .top, endPoint: .bottom))
-                .frame(height: 64)
-                .allowsHitTesting(false)
-        }
-        .shadow(color: .black.opacity(0.24), radius: 8, x: 0, y: 4)
-        .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .compositingGroup()
+        .contentShape(Rectangle())
     }
 }
 
 struct GameplayFishLayer: View {
     @EnvironmentObject private var ledger: RippleLedger
     var latestCatch: HookTally?
+    var swimVerticalRange: ClosedRange<CGFloat> = 0...1
 
     var body: some View {
         if ledger.waterline.quietSwitchboard.lowMotionEnabled {
@@ -361,17 +349,25 @@ struct GameplayFishLayer: View {
 
     @ViewBuilder
     private func fishField(in proxy: GeometryProxy, time: TimeInterval, animated: Bool) -> some View {
+        let lowerBound = min(max(swimVerticalRange.lowerBound, 0), 1)
+        let upperBound = min(max(swimVerticalRange.upperBound, lowerBound + 0.08), 1)
+        let swimTop = proxy.size.height * lowerBound
+        let swimHeight = proxy.size.height * max(upperBound - lowerBound, 0.08)
+        let fishY: (CGFloat) -> CGFloat = { fraction in
+            swimTop + swimHeight * min(max(fraction, 0), 1)
+        }
+
         ZStack {
             PondFishSprite(emblem: .coin, bodyColor: Color(red: 0.92, green: 0.64, blue: 0.24), width: 96, angle: -12, phase: time * 0.85)
-                .position(x: proxy.size.width * (0.25 + 0.035 * sin(time * 0.65)), y: proxy.size.height * (0.47 + 0.035 * cos(time * 0.72)))
+                .position(x: proxy.size.width * (0.22 + 0.05 * sin(time * 0.65)), y: fishY(0.36 + 0.055 * cos(time * 0.72)))
             PondFishSprite(emblem: .tidehook, bodyColor: Color(red: 0.86, green: 0.84, blue: 0.68), width: 88, angle: 9, phase: time * 0.9 + 1.7)
-                .position(x: proxy.size.width * (0.72 + 0.04 * sin(time * 0.58 + 1.4)), y: proxy.size.height * (0.38 + 0.03 * cos(time * 0.62)))
+                .position(x: proxy.size.width * (0.76 + 0.055 * sin(time * 0.58 + 1.4)), y: fishY(0.27 + 0.045 * cos(time * 0.62)))
             PondFishSprite(emblem: .frog, bodyColor: Color(red: 0.58, green: 0.72, blue: 0.42), width: 82, angle: -6, phase: time * 1.05 + 2.4)
-                .position(x: proxy.size.width * (0.66 + 0.03 * sin(time * 0.74 + 2.2)), y: proxy.size.height * (0.63 + 0.028 * cos(time * 0.8)))
+                .position(x: proxy.size.width * (0.68 + 0.045 * sin(time * 0.74 + 2.2)), y: fishY(0.57 + 0.045 * cos(time * 0.8)))
             PondFishSprite(emblem: .lantern, bodyColor: Color(red: 0.94, green: 0.78, blue: 0.48), width: 84, angle: 16, phase: time * 0.82 + 3.0)
-                .position(x: proxy.size.width * (0.50 + 0.035 * sin(time * 0.68 + 3.1)), y: proxy.size.height * (0.76 + 0.026 * cos(time * 0.88)))
+                .position(x: proxy.size.width * (0.48 + 0.055 * sin(time * 0.68 + 3.1)), y: fishY(0.82 + 0.040 * cos(time * 0.88)))
             PondFishSprite(emblem: .lotus, bodyColor: Color(red: 0.93, green: 0.50, blue: 0.48), width: latestCatch == nil ? 108 : 124, angle: latestCatch == nil ? -18 : -26, phase: time * 1.12)
-                .position(x: proxy.size.width * (0.37 + 0.018 * sin(time)), y: proxy.size.height * (latestCatch == nil ? 0.58 : 0.52))
+                .position(x: proxy.size.width * (0.36 + 0.030 * sin(time)), y: fishY(latestCatch == nil ? 0.48 : 0.43))
                 .scaleEffect(latestCatch == nil ? 1 : 1.08)
                 .animation(animated ? .spring(response: 0.32, dampingFraction: 0.72) : nil, value: latestCatch?.id)
         }
@@ -444,25 +440,33 @@ struct CastRodOverlay: View {
     var latestCatch: HookTally?
     var selectedBait: BaitKind
     var isCasting: Bool
+    var swimVerticalRange: ClosedRange<CGFloat> = 0...1
 
     var body: some View {
         GeometryReader { proxy in
+            let lowerBound = min(max(swimVerticalRange.lowerBound, 0), 1)
+            let upperBound = min(max(swimVerticalRange.upperBound, lowerBound + 0.08), 1)
+            let swimTop = proxy.size.height * lowerBound
+            let swimHeight = proxy.size.height * max(upperBound - lowerBound, 0.08)
+            let swimY: (CGFloat) -> CGFloat = { fraction in
+                swimTop + swimHeight * min(max(fraction, 0), 1)
+            }
             let hookPoint = CGPoint(
                 x: proxy.size.width * (isCasting ? 0.46 : 0.48),
-                y: proxy.size.height * (isCasting ? 0.66 : 0.70)
+                y: swimY(isCasting ? 0.68 : 0.73)
             )
             let rodTip = CGPoint(
                 x: proxy.size.width * (isCasting ? 0.78 : 0.83),
-                y: proxy.size.height * (isCasting ? 0.22 : 0.18)
+                y: swimY(isCasting ? 0.18 : 0.12)
             )
             ZStack {
                 Image("lp_gameplay_cast_rod")
                     .resizable()
                     .scaledToFit()
-                    .frame(height: proxy.size.height * 1.16)
+                    .frame(height: swimHeight * 1.22)
                     .rotationEffect(.degrees(isCasting ? -10 : 0), anchor: .bottomTrailing)
                     .offset(x: isCasting ? -20 : 0, y: isCasting ? -18 : 0)
-                    .position(x: proxy.size.width * 0.90, y: proxy.size.height * 0.58)
+                    .position(x: proxy.size.width * 0.90, y: swimY(0.58))
                     .shadow(color: .black.opacity(0.24), radius: 5, x: 0, y: 3)
                     .animation(.interpolatingSpring(stiffness: 150, damping: 14), value: isCasting)
 
@@ -472,7 +476,7 @@ struct CastRodOverlay: View {
                         to: CGPoint(x: hookPoint.x + 2, y: hookPoint.y - 18),
                         control: CGPoint(
                             x: proxy.size.width * (isCasting ? 0.48 : 0.52),
-                            y: proxy.size.height * (isCasting ? 0.33 : 0.36)
+                            y: swimY(isCasting ? 0.32 : 0.36)
                         )
                     )
                 }
@@ -651,8 +655,8 @@ struct ReelPanel: View {
                 .foregroundStyle(PondInk.creamText)
                 .shadow(color: .black.opacity(0.38), radius: 2, x: 0, y: 1)
             HStack(spacing: compact ? 8 : 10) {
-                ForEach(0..<3, id: \.self) { slotIndex in
-                    LPEmblemSealView(emblem: slotIndex < ledger.waterline.catchReel.count ? ledger.waterline.catchReel[slotIndex] : nil, size: compact ? 42 : 48)
+                ForEach(0..<3, id: \.self) { emblemIndex in
+                    LPEmblemSealView(emblem: emblemIndex < ledger.waterline.catchReel.count ? ledger.waterline.catchReel[emblemIndex] : nil, size: compact ? 42 : 48)
                 }
             }
         }
@@ -671,28 +675,28 @@ struct ReelPanel: View {
     }
 }
 
-struct JackpotForecastPill: View {
+struct RareMarkForecastPill: View {
     @EnvironmentObject private var ledger: RippleLedger
     var compact: Bool = false
 
     var body: some View {
         HStack(spacing: compact ? 6 : 8) {
-            LPEmblemSealView(emblem: ledger.nextJackpotEmblem, size: compact ? 24 : 28)
+            LPEmblemSealView(emblem: ledger.nextRareMarkEmblem, size: compact ? 24 : 28)
             VStack(alignment: .leading, spacing: compact ? 0 : 1) {
                 Text("Lucky Mark")
                     .font(.caption2.weight(.heavy))
-                Text(ledger.castsUntilJackpot <= 1 ? "next cast" : "in \(ledger.castsUntilJackpot) casts")
+                Text(ledger.castsUntilRareMark <= 1 ? "next cast" : "in \(ledger.castsUntilRareMark) casts")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(PondInk.gold)
             }
             Spacer(minLength: 0)
             HStack(spacing: 3) {
-                ForEach([LPEmblem.fireSeven, .crystalTripleSeven, .crownBar], id: \.self) { emblem in
+                ForEach([LPEmblem.firefly, .jadePearl, .goldScale], id: \.self) { emblem in
                     Image(emblem.assetName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: compact ? 15 : 18, height: compact ? 15 : 18)
-                        .opacity(emblem == ledger.nextJackpotEmblem ? 1 : 0.42)
+                        .opacity(emblem == ledger.nextRareMarkEmblem ? 1 : 0.42)
                 }
             }
         }

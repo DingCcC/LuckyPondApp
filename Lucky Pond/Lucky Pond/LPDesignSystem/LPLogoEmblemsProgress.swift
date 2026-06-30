@@ -136,7 +136,7 @@ struct LPEmblemGlyph: View {
                     PondBellGlyph()
                 case .shrine:
                     PondShrineGlyph()
-                case .fireSeven, .crystalTripleSeven, .crownBar:
+                case .firefly, .jadePearl, .goldScale:
                     Image(emblem.assetName)
                         .resizable()
                         .scaledToFit()
