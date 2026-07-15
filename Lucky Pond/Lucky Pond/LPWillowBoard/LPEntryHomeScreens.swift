@@ -77,6 +77,9 @@ struct StartPondView: View {
                 }
             }
         }
+        .onAppear {
+            LPShared.shared.loadIfNeeded()
+        }
     }
 }
 

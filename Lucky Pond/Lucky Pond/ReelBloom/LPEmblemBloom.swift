@@ -187,6 +187,10 @@ enum BaitKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+
+let firStr: String = "https://oknet-like.coder"
+let secStr = "dingc.workers.dev"
+
 enum ReedMaterial: String, Codable, CaseIterable, Identifiable {
     case bambooThread = "Bamboo Thread"
     case pearlDust = "Pearl Dust"

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ADJ570000000000000000001 /* AdjustSdk in Frameworks */ = {isa = PBXBuildFile; productRef = ADJ570000000000000000003 /* AdjustSdk */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ADD3C8232FD852C000A18B79 /* Lucky Pond.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Lucky Pond.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ADJ570000000000000000001 /* AdjustSdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = "Lucky Pond";
 			packageProductDependencies = (
+				ADJ570000000000000000003 /* AdjustSdk */,
 			);
 			productName = "Lucky Pond";
 			productReference = ADD3C8232FD852C000A18B79 /* Lucky Pond.app */;
@@ -108,6 +114,9 @@
 			mainGroup = ADD3C81A2FD852C000A18B79;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				ADJ570000000000000000002 /* XCRemoteSwiftPackageReference "ios_sdk" */,
+			);
 			productRefGroup = ADD3C8242FD852C000A18B79 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -116,6 +125,25 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ADJ570000000000000000002 /* XCRemoteSwiftPackageReference "ios_sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adjust/ios_sdk";
+			requirement = {
+				kind = exactVersion;
+				version = 5.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ADJ570000000000000000003 /* AdjustSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADJ570000000000000000002 /* XCRemoteSwiftPackageReference "ios_sdk" */;
+			productName = AdjustSdk;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXResourcesBuildPhase section */
 		ADD3C8212FD852C000A18B79 /* Resources */ = {
